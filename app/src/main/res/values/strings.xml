@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">Endividado</string>
+    <string name="creditor">Quem é o credor</string>
+    <string name="original_amount">Quantia original</string>
+    <string name="related_to">Referente à</string>
+    <string name="due_date">Data do vencimento</string>
+    <string name="done">Salvar</string>
+    <string name="filter">Filtrar</string>
+    <string name="current_month">Mês corrente</string>
+    <string name="another_month">Outro mês</string>
+    <string name="all">Todos</string>
+</resources>

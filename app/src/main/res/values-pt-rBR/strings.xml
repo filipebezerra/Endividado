@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="creditor">Quem é o credor</string>
+    <string name="original_amount">Quantia original</string>
+    <string name="related_to">Referente à</string>
+    <string name="due_date">Data do vencimento</string>
+    <string name="done">Salvar</string>
+</resources>

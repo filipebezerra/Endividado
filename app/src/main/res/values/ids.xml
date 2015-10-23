@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="creditor" type="id" />
+    <item name="original_amount" type="id" />
+    <item name="related_to" type="id" />
+    <item name="due_date" type="id" />
+    <item name="toolbar" type="id" />
+    <item name="done" type="id" />
+    <item name="creditor_helper" type="id" />
+    <item name="due_date_helper" type="id" />
+    <item name="original_amount_helper" type="id" />
+    <item name="related_to_helper" type="id" />
+    <item name="container" type="id" />
+    <item name="recycler_view" type="id" />
+    <item name="fab" type="id" />
+    <item name="current_month" type="id" />
+    <item name="another_month" type="id" />
+    <item name="settle_debt" type="id" />
+    <item name="all" type="id" />
+</resources>
