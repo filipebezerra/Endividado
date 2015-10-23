@@ -9,4 +9,6 @@
     <string name="current_month">Mês corrente</string>
     <string name="another_month">Outro mês</string>
     <string name="all">Todos</string>
+    <string name="title_activity_new_debt">Nova dívida adquirida</string>
+    <string name="title_activity_main">Suas dívidas</string>
 </resources>

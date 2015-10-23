@@ -5,4 +5,6 @@
     <string name="related_to">Referente à</string>
     <string name="due_date">Data do vencimento</string>
     <string name="done">Salvar</string>
+    <string name="title_activity_new_debt">Nova dívida adquirida</string>
+    <string name="title_activity_main">Suas dívidas</string>
 </resources>
