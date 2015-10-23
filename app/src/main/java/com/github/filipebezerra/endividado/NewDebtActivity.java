@@ -23,6 +23,7 @@ import android.widget.TextView;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
 import java.text.DecimalFormat;
@@ -189,10 +190,16 @@ public class NewDebtActivity extends AppCompatActivity
                 final long dateInMillis = DateUtils.getDateInMillis(dueDate);
                 final Debt newDebt = new Debt(sDecimalFormat.parse(originalAmount).doubleValue(),
                         relatedTo, creditor, dateInMillis);
+
+                final MaterialDialog dialog = DialogUtils.
+                        showIndeterminateProgress(NewDebtActivity.this, null, "Por favor aguarde...");
+
                 sFirebaseRef.child(Debt.CHILD).push().setValue(newDebt,
                         new Firebase.CompletionListener() {
                             @Override
                             public void onComplete(FirebaseError firebaseError, Firebase firebase) {
+                                dialog.dismiss();
+
                                 if (firebaseError != null) {
                                     Snackbar.make(mRootLayout, "Falha ao salvar dados. " +
                                             firebaseError.getMessage(), LENGTH_LONG).
