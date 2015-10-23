@@ -3,6 +3,7 @@ package com.github.filipebezerra.endividado;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
@@ -18,11 +19,13 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.firebase.client.Firebase;
+import com.squareup.otto.Subscribe;
 import java.text.ParseException;
 
 public class MainActivity extends AppCompatActivity {
     @Bind(R.id.recycler_view) RecyclerView mRecyclerView;
     private DebtAdapter mDebtAdapter;
+    private MaterialDialog mDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,9 +40,24 @@ public class MainActivity extends AppCompatActivity {
         Firebase.setAndroidContext(this);
 
         mRecyclerView.setHasFixedSize(true);
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        mRecyclerView.setAdapter(mDebtAdapter = new DebtAdapter());
+        mRecyclerView.setLayoutManager(getLayoutManagerForCurrentScreenOrientation(null));
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        BusProvider.getInstance().register(this);
+
+        if (mDebtAdapter == null) {
+            mRecyclerView.setAdapter(mDebtAdapter = new DebtAdapter());
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        BusProvider.getInstance().unregister(this);
     }
 
     @Override
@@ -95,10 +113,39 @@ public class MainActivity extends AppCompatActivity {
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
 
-        if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            mRecyclerView.setLayoutManager(new GridLayoutManager(this, 2));
+        getLayoutManagerForCurrentScreenOrientation(newConfig);
+    }
+
+    private RecyclerView.LayoutManager getLayoutManagerForCurrentScreenOrientation(
+            @Nullable Configuration configuration) {
+
+        int currentOrientation;
+        if (configuration == null) {
+            currentOrientation = getResources().getConfiguration().orientation;
         } else {
-            mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+            currentOrientation = configuration.orientation;
+        }
+
+        if (currentOrientation == Configuration.ORIENTATION_LANDSCAPE) {
+            return new GridLayoutManager(this, 2);
+        } else {
+            return new LinearLayoutManager(this);
+        }
+    }
+
+    @Subscribe
+    public void onLoadingNotificationEvent(LoadingNotificationEvent event) {
+        switch (event.getLoadingType()) {
+            case LOADING_STARTED:
+                mDialog = DialogUtils.showIndeterminateProgress(this, null, "Carregando suas dívidas...");
+                break;
+            case LOADING_COMPLETE:
+                if (mDialog != null && mDialog.isShowing()) {
+                    mDialog.dismiss();
+                }
+                break;
+            case LOADING_FAILED:
+                break;
         }
     }
 }

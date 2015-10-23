@@ -13,16 +13,20 @@ import com.firebase.client.ChildEventListener;
 import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
+import com.firebase.client.ValueEventListener;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
+import static com.github.filipebezerra.endividado.LoadingNotificationEvent.LoadingType.LOADING_COMPLETE;
+import static com.github.filipebezerra.endividado.LoadingNotificationEvent.LoadingType.LOADING_STARTED;
+
 /**
  * .
  *
- * @author Fbs
+ * @author Filipe Bezerra
  * @version #, 22/10/2015
  * @since #
  */
@@ -36,6 +40,25 @@ public class DebtAdapter extends RecyclerView.Adapter<DebtAdapter.DebtViewHolder
     private static NumberFormat sDecimalFormat = DecimalFormat.getCurrencyInstance();
 
     public DebtAdapter() {
+        BusProvider.getInstance().post(new LoadingNotificationEvent(LOADING_STARTED));
+
+        sFirebaseRef.child(Debt.CHILD).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for(DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    add(snapshot);
+                }
+                addChildEventListener();
+                BusProvider.getInstance().post(new LoadingNotificationEvent(LOADING_COMPLETE));
+            }
+
+            @Override
+            public void onCancelled(FirebaseError firebaseError) {}
+        });
+    }
+
+    private void addChildEventListener() {
+        //todo fix loading existing data and only retrieve new data
         sFirebaseRef.child(Debt.CHILD).addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
@@ -107,11 +130,13 @@ public class DebtAdapter extends RecyclerView.Adapter<DebtAdapter.DebtViewHolder
         final Debt debt = retrieveDebt(snapshot);
         if (!debt.isSettled()) {
             final int size = mDebtList.size();
-            if (mDebtList.add(debt)) {
+            final int indexOf = mDebtList.indexOf(debt);
+
+            if (indexOf == -1 && mDebtList.add(debt)) {
                 notifyItemInserted(size);
             }
         }
-    }
+}
 
     private void update(@NonNull final DataSnapshot snapshot) {
         final Debt debt = retrieveDebt(snapshot);
